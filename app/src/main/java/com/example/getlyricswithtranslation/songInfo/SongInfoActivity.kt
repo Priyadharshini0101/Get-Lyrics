@@ -19,13 +19,13 @@ class SongInfoActivity : AppCompatActivity() {
         val binding = DataBindingUtil.setContentView<SongInfoBinding>(this, R.layout.song_info)
         listOfSongs = intent.getParcelableExtra<ListOfSongs>(MainActivity.USER_KEY)
         title = listOfSongs!!.title
-        val viewModelFactory = SongInfoViewModelFactory(listOfSongs)
 
-        val songInfoViewModel = ViewModelProvider(this, viewModelFactory).get(SongInfoViewModel::class.java)
+
+        val songInfoViewModel = ViewModelProvider(this).get(SongInfoViewModel::class.java)
         binding.songInfoViewModel = songInfoViewModel
         binding.lifecycleOwner = this
         songInfoViewModel.loadData(listOfSongs)
-        songInfoViewModel.loadLyrics(0)
+//        songInfoViewModel.loadLyrics(0)
 
         songInfoViewModel.songInfo.observe(this, Observer {
             if(it != null){

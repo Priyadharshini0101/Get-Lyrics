@@ -46,9 +46,15 @@ class MainActivityViewModel: ViewModel() {
             val connection = url.openConnection() as HttpURLConnection
             connection.requestMethod = "GET"
             connection.setRequestProperty("Authorization", "Bearer ${Constants.accessToken}")
-            val inputStream = connection.inputStream
-            val response =
-                BufferedReader(InputStreamReader(inputStream)).use(BufferedReader::readText)
+                val responseCode = connection.responseCode
+            var response = ""
+                    if (responseCode == HttpURLConnection.HTTP_OK) {
+
+
+                        val inputStream = connection.inputStream
+                        response =
+                            BufferedReader(InputStreamReader(inputStream)).use(BufferedReader::readText)
+                    }
             return response
         }
 

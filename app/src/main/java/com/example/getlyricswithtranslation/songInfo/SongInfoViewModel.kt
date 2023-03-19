@@ -18,9 +18,9 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 
-class SongInfoViewModel(song: ListOfSongs): ViewModel() {
-    private val _songInfo = MutableLiveData<String?>()
-    val songInfo: LiveData<String?>
+class SongInfoViewModel(): ViewModel() {
+    private val _songInfo = MutableLiveData<SongInfo?>()
+    val songInfo: LiveData<SongInfo?>
         get() = _songInfo
     val path: ArrayList<String> = arrayListOf()
     lateinit var songDet:SongInfo
@@ -35,9 +35,15 @@ class SongInfoViewModel(song: ListOfSongs): ViewModel() {
                 val url = URL(urlString)
                 val connection = url.openConnection() as HttpURLConnection
                 connection.requestMethod = "GET"
-                connection.setRequestProperty("Authorization", "Bearer ${Constants.accessToken}")
-                val inputStream = connection.inputStream
-                val response = BufferedReader(InputStreamReader(inputStream)).use(BufferedReader::readText)
+                connection.setRequestProperty("Authorization","Bearer ${Constants.accessToken}")
+                val responseCode = connection.responseCode
+                var response = ""
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+
+                    val inputStream = connection.inputStream
+                    response =
+                        BufferedReader(InputStreamReader(inputStream)).use(BufferedReader::readText)
+                }
                 return response
             }
 
@@ -67,11 +73,12 @@ class SongInfoViewModel(song: ListOfSongs): ViewModel() {
                 path.add(romanizedLyrics)
 
                 songDet = SongInfo(song,name, path, musicByName, labelName, url)
-
+                _songInfo.postValue(songDet)
 
             }
         }
         songIn().execute()
+
     }
 
     fun loadLyrics(index:Int) {
@@ -119,7 +126,7 @@ class SongInfoViewModel(song: ListOfSongs): ViewModel() {
 
             override fun onPostExecute(result: String?) {
              songDet.lyrics = result!!
-                _songInfo.postValue(result)
+
 
             }
         }
